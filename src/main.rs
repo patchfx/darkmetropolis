@@ -62,6 +62,16 @@ struct State {
     ecs: World,
 }
 
+#[derive(PartialEq, Copy, Clone)]
+enum TileType {
+    Wall,
+    Floor,
+}
+
+fn xy_idx(x:i32, y:i32) -> usize {
+    (y as usize * 80) + x as usize
+}
+
 fn main() {
     let context = Rltk::init_simple8x8(80, 60, "Dark Metropolis", "resources");
     let mut gs = State { ecs: World::new() };
