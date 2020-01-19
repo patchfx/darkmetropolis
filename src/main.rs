@@ -15,6 +15,9 @@ pub use player::*;
 mod component;
 pub use component::*;
 
+mod rect;
+pub use rect::*;
+
 pub struct State {
     ecs: World,
 }
@@ -35,7 +38,6 @@ impl GameState for State {
     }
 }
 
-
 fn main() {
     let context = Rltk::init_simple8x8(80, 60, "Dark Metropolis", "resources");
     let mut gs = State { ecs: World::new() };
@@ -43,7 +45,7 @@ fn main() {
     gs.ecs.register::<Position>();
     gs.ecs.register::<Renderable>();
     gs.ecs.register::<Player>();
-    gs.ecs.insert(new_map());
+    gs.ecs.insert(new_map_rooms_and_corridors());
     gs.ecs
       .create_entity()
       .with(Position { x: 40, y: 25 })
