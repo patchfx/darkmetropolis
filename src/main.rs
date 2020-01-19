@@ -1,8 +1,8 @@
 extern crate rltk;
 
-use rltk::{Console, GameState, Rltk, RGB, VirtualKeyCode};
+use rltk::{Console, GameState, Rltk, RGB };
 use specs::prelude::*;
-use std::cmp::{max, min};
+
 #[macro_use]
 extern crate specs_derive;
 

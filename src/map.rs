@@ -1,6 +1,6 @@
-use rltk::{ RGB, Rltk, Console, RandomNumberGenerator };
+use rltk::{ RGB, Rltk, Console };
 //use super::{ Rect };
-use std::cmp::{ max, min };
+//use std::cmp::{ max, min };
 
 #[derive(PartialEq, Copy, Clone)]
 pub enum TileType {
