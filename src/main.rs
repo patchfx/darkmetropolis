@@ -29,8 +29,7 @@ impl GameState for State {
         let positions = self.ecs.read_storage::<Position>();
         let renderables = self.ecs.read_storage::<Renderable>();
 
-        let map = self.ecs.fetch::<Vec<TileType>>();
-        draw_map(&map, ctx);
+        draw_map(&self.ecs, ctx);
 
         for (pos, render) in (&positions, &renderables).join() {
             ctx.set(pos.x, pos.y, render.fg, render.bg, render.glyph);
@@ -39,18 +38,17 @@ impl GameState for State {
 }
 
 fn main() {
-    let context = Rltk::init_simple8x8(80, 60, "Dark Metropolis", "resources");
+    let context = Rltk::init_simple8x8(80, 50, "Dark Metropolis", "resources");
     let mut gs = State { ecs: World::new() };
 
     gs.ecs.register::<Position>();
     gs.ecs.register::<Renderable>();
     gs.ecs.register::<Player>();
 
-    let (rooms, map) = new_map_rooms_and_corridors();
-    gs.ecs.insert(map);
-    let (player_x, player_y) = rooms[0].center();
+    let map = Map::new_map_rooms_and_corridors();
+    let (player_x, player_y) = map.rooms[0].center();
 
-    gs.ecs.insert(new_map_rooms_and_corridors());
+    gs.ecs.insert(map);
     gs.ecs
       .create_entity()
       .with(Position { x: player_x, y: player_y })
