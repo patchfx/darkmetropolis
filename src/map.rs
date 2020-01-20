@@ -1,4 +1,4 @@
-use rltk::{ RGB, Rltk, Console, RandomNumberGenerator };
+use rltk::{RGB, Rltk, Console, RandomNumberGenerator, BaseMap, Algorithm2D, Point};
 use super::{ Rect };
 use std::cmp::{ max, min };
 use specs::prelude::*;
@@ -13,7 +13,8 @@ pub struct Map {
   pub tiles : Vec<TileType>,
   pub rooms : Vec<Rect>,
   pub width : i32,
-  pub height : i32
+  pub height : i32,
+  pub revealed_tiles : Vec<bool>,
 }
 
 impl Map {
@@ -55,7 +56,8 @@ impl Map {
       tiles : vec![TileType::Wall; 80*50],
       rooms : Vec::new(),
       width : 80,
-      height: 50
+      height: 50,
+      revealed_tiles: vec![false; 80*50],
     };
 
     const MAX_ROOMS : i32 = 30;
@@ -97,25 +99,57 @@ impl Map {
   }
 }
 
+impl Algorithm2D for Map {
+  fn in_bounds(&self, pos: Point) -> bool {
+    pos.x > 0 && pos.x < self.width - 1 && pos.y > 0 && pos.y < self.height - 1
+  }
+
+  fn point2d_to_index(&self, pt: Point) -> i32 {
+    (pt.y * self.width) + pt.x
+  }
+
+  fn index_to_point2d(&self, idx: i32) -> Point {
+    Point { x: idx % self.width, y: idx / self.width }
+  }
+}
+
+impl BaseMap for Map {
+  fn is_opaque(&self, idx: i32) -> bool {
+    self.tiles[idx as usize] == TileType::Wall
+  }
+
+  fn get_available_exits(&self, _idx: i32) -> Vec<(i32, f32)> {
+    Vec::new()
+  }
+
+  fn get_pathing_distance(&self, idx1: i32, idx2: i32) -> f32 {
+    let p1 = Point::new(idx1 % self.width, idx1 / self.width);
+    let p2 = Point::new(idx2 % self.width, idx2 / self.width);
+    rltk::DistanceAlg::Pythagoras.distance2d(p1, p2)
+  }
+}
+
 pub fn draw_map(ecs: &World, ctx: &mut Rltk) {
   let map = ecs.fetch::<Map>();
   let mut y = 0;
   let mut x = 0;
 
   for (idx,tile) in map.tiles.iter().enumerate() {
+    if map.revealed_tiles[idx] {
       match tile {
-          TileType::Floor => {
-              ctx.set(x, y, RGB::from_f32(0.5, 0.5, 0.5), RGB::from_f32(0., 0., 0.), rltk::to_cp437('.'));
-          }
-          TileType::Wall => {
-              ctx.set(x, y, RGB::from_f32(0., 1.0, 0.), RGB::from_f32(0., 0., 0.), rltk::to_cp437('#'));
-          }
+        TileType::Floor => {
+          ctx.set(x, y, RGB::from_f32(0.5, 0.5, 0.5), RGB::from_f32(0., 0., 0.), rltk::to_cp437('.'));
+        }
+        TileType::Wall => {
+          ctx.set(x, y, RGB::from_f32(0., 1.0, 0.), RGB::from_f32(0., 0., 0.), rltk::to_cp437('#'));
+        }
       }
+    }
 
-      x += 1;
-      if x > 79 {
-          x = 0;
-          y += 1;
-      }
+    x += 1;
+    if x > 79 {
+        x = 0;
+        y += 1;
+    }
   }
 }
