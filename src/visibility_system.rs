@@ -24,8 +24,8 @@ impl<'a> System<'a> for VisibilitySystem {
         viewshed.visible_tiles = field_of_view(Point::new(pos.x, pos.y), viewshed.range, &*map);
         viewshed.visible_tiles.retain(|p| p.x > 0 && p.x < map.width - 1 && p.y > 0 && p.y < map.height - 1);
 
-        let p : Option<&Player> = player.get(ent);
-        if let Some(p) = p {
+        let _p : Option<&Player> = player.get(ent);
+        if let Some(_p) = _p {
           for t in map.visible_tiles.iter_mut() { *t = false };
           for vis in viewshed.visible_tiles.iter() {
             let idx = map.xy_idx(vis.x, vis.y);

@@ -68,7 +68,7 @@ impl Map {
 
     let mut rng = RandomNumberGenerator::new();
 
-    for i in 0..MAX_ROOMS {
+    for _i in 0..MAX_ROOMS {
       let w = rng.range(MIN_SIZE, MAX_SIZE);
       let h = rng.range(MIN_SIZE, MAX_SIZE);
       let x = rng.roll_dice(1, map.width - w - 1) - 1;
@@ -101,36 +101,17 @@ impl Map {
   }
 }
 
-impl Algorithm2D for Map {
-  fn in_bounds(&self, pos: Point) -> bool {
-    pos.x > 0 && pos.x < self.width - 1 && pos.y > 0 && pos.y < self.height - 1
-  }
-
-  fn point2d_to_index(&self, pt: Point) -> i32 {
-    (pt.y * self.width) + pt.x
-  }
-
-  fn index_to_point2d(&self, idx: i32) -> Point {
-    Point { x: idx % self.width, y: idx / self.width }
-  }
-}
-
 impl BaseMap for Map {
-  fn is_opaque(&self, idx: i32) -> bool {
-    self.tiles[idx as usize] == TileType::Wall
-  }
-
-  fn get_available_exits(&self, _idx: i32) -> Vec<(i32, f32)> {
-    Vec::new()
-  }
-
-  fn get_pathing_distance(&self, idx1: i32, idx2: i32) -> f32 {
-    let p1 = Point::new(idx1 % self.width, idx1 / self.width);
-    let p2 = Point::new(idx2 % self.width, idx2 / self.width);
-    rltk::DistanceAlg::Pythagoras.distance2d(p1, p2)
+  fn is_opaque(&self, idx:usize) -> bool {
+    self.tiles[idx] == TileType::Wall
   }
 }
 
+impl Algorithm2D for Map {
+  fn dimensions(&self) -> Point {
+    Point::new(self.width, self.height)
+  }
+}
 pub fn draw_map(ecs: &World, ctx: &mut Rltk) {
   let map = ecs.fetch::<Map>();
   let mut y = 0;
