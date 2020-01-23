@@ -10,6 +10,8 @@ pub struct Position {
 #[derive(Component, Debug)]
 pub struct Player {}
 
+#[derive(Component, Debug)]
+pub struct Monster {}
 
 #[derive(Component)]
 pub struct Renderable {
