@@ -13,6 +13,11 @@ pub struct Player {}
 #[derive(Component, Debug)]
 pub struct Monster {}
 
+#[derive(Component, Debug)]
+pub struct Name {
+    pub name: String,
+}
+
 #[derive(Component)]
 pub struct Renderable {
     pub glyph: u8,
