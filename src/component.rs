@@ -18,6 +18,9 @@ pub struct Name {
     pub name: String,
 }
 
+#[derive(Component, Debug)]
+pub struct BlocksTile {}
+
 #[derive(Component)]
 pub struct Renderable {
     pub glyph: u8,
