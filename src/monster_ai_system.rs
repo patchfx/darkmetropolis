@@ -20,7 +20,11 @@ impl<'a> System<'a> for MonsterAI {
 
     for (mut viewshed, _monster, name, mut pos) in (&mut viewshed, &monster, &name, &mut position).join() {
       if viewshed.visible_tiles.contains(&*player_pos) {
-        console::log(&format!("{} shouts insults", name.name));
+        let distance = rltk::DistanceAlg::Pythagoras.distance2d(Point::new(pos.x, pos.y), *player_pos);
+        if distance < 1.5 {
+          console::log(&format!("{} shouts insults", name.name));
+          return;
+        }
 
         let path = rltk::a_star_search(
           map.xy_idx(pos.x, pos.y) as i32,
