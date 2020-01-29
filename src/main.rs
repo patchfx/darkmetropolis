@@ -33,6 +33,10 @@ pub use melee_combat_system::MeleeCombatSystem;
 mod damage_system;
 pub use damage_system::DamageSystem;
 
+mod gui;
+mod gamelog;
+pub use gamelog::GameLog;
+
 const MAPWIDTH: usize = 80;
 const MAPHEIGHT: usize = 50;
 const MAPCOUNT: usize = MAPHEIGHT * MAPWIDTH;
@@ -104,6 +108,8 @@ impl GameState for State {
             let idx = map.xy_idx(pos.x, pos.y);
             if map.visible_tiles[idx] { ctx.set(pos.x, pos.y, render.fg, render.bg, render.glyph); }
         }
+
+        gui::draw_ui(&self.ecs, ctx);
     }
 }
 
@@ -169,6 +175,7 @@ fn main() {
           .build();
     }
 
+    gs.ecs.insert(GameLog { entries: vec!["Welcome to Dark Metropolis".to_string()] });
     gs.ecs.insert(map);
     gs.ecs.insert(Point::new(player_x, player_y));
     gs.ecs.insert(player_entity);
