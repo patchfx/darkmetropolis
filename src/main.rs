@@ -27,6 +27,12 @@ pub use monster_ai_system::MonsterAI;
 mod map_indexing_system;
 pub use map_indexing_system::MapIndexingSystem;
 
+mod melee_combat_system;
+pub use melee_combat_system::MeleeCombatSystem;
+
+mod damage_system;
+pub use damage_system::DamageSystem;
+
 #[derive(PartialEq, Copy, Clone)]
 pub enum RunState { Paused, Running }
 
@@ -43,6 +49,10 @@ impl State {
         mob.run_now(&self.ecs);
         let mut mapindex = MapIndexingSystem{};
         mapindex.run_now(&self.ecs);
+        let mut melee_combat_system = MeleeCombatSystem{};
+        melee_combat_system.run_now(&self.ecs);
+        let mut damage_system = DamageSystem{};
+        damage_system.run_now(&self.ecs);
         self.ecs.maintain();
     }
 }
@@ -57,7 +67,7 @@ impl GameState for State {
         } else {
             self.runstate = player_input(self, ctx);
         }
-
+        damage_system::delete_the_dead(&mut self.ecs);
         draw_map(&self.ecs, ctx);
 
         let positions = self.ecs.read_storage::<Position>();
@@ -84,11 +94,28 @@ fn main() {
     gs.ecs.register::<Monster>();
     gs.ecs.register::<Name>();
     gs.ecs.register::<BlocksTile>();
+    gs.ecs.register::<CombatStats>();
+    gs.ecs.register::<WantsToMelee>();
+    gs.ecs.register::<SufferDamage>();
 
     let map = Map::new_map_rooms_and_corridors();
     let (player_x, player_y) = map.rooms[0].center();
 
     let mut rng = rltk::RandomNumberGenerator::new();
+
+    let player_entity =  gs.ecs
+      .create_entity()
+      .with(Position { x: player_x, y: player_y })
+      .with(Renderable {
+          glyph: rltk::to_cp437('@'),
+          fg: RGB::named(rltk::YELLOW),
+          bg: RGB::named(rltk::BLACK),
+      })
+      .with(Player{})
+      .with(Name { name: "Player".to_string() })
+      .with(Viewshed { visible_tiles: Vec::new(), range: 8, dirty: true })
+      .with( CombatStats { max_hp: 30, hp: 30, defense: 2, power: 2 })
+      .build();
 
     for (i, room) in map.rooms.iter().skip(1).enumerate() {
         let (x, y) = room.center();
@@ -112,22 +139,12 @@ fn main() {
           .with( Monster {} )
           .with( Name { name: format!("{} #{}", &name, i) } )
           .with( BlocksTile {})
+          .with( CombatStats { max_hp: 16, hp: 16, defense: 1, power: 4 })
           .build();
     }
 
     gs.ecs.insert(map);
-    gs.ecs
-      .create_entity()
-      .with(Position { x: player_x, y: player_y })
-      .with(Renderable {
-          glyph: rltk::to_cp437('@'),
-          fg: RGB::named(rltk::YELLOW),
-          bg: RGB::named(rltk::BLACK),
-      })
-      .with(Player{})
-      .with(Viewshed { visible_tiles: Vec::new(), range: 8, dirty: true })
-      .build();
-
     gs.ecs.insert(Point::new(player_x, player_y));
+    gs.ecs.insert(player_entity);
     rltk::main_loop(context, gs);
 }
