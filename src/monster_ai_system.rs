@@ -1,6 +1,6 @@
 extern crate specs;
 use specs::prelude::*;
-use super::{ Viewshed, Position, Map, Monster, Name, WantsToMelee };
+use super::{ Viewshed, Position, Map, Monster, Name, WantsToMelee, RunState };
 
 extern crate rltk;
 use rltk::{ Point  };
@@ -12,6 +12,7 @@ impl<'a> System<'a> for MonsterAI {
   type SystemData = ( WriteExpect<'a, Map>,
                       ReadExpect<'a, Point>,
                       ReadExpect<'a, Entity>,
+                      ReadExpect<'a, RunState>,
                       Entities<'a>,
                       WriteStorage<'a, Viewshed>,
                       ReadStorage<'a, Monster>,
@@ -19,7 +20,9 @@ impl<'a> System<'a> for MonsterAI {
                       WriteStorage<'a, WantsToMelee>);
 
   fn run(&mut self, data: Self::SystemData) {
-    let (mut map, player_pos, player_entity, entities, mut viewshed, monster, mut position, mut wants_to_melee) = data;
+    let (mut map, player_pos, player_entity, runstate, entities, mut viewshed, monster, mut position, mut wants_to_melee) = data;
+
+    if *runstate != RunState::MonsterTurn { return; }
 
     for (entity, mut viewshed, _monster, mut pos) in (&entities, &mut viewshed, &monster, &mut position).join() {
       let distance = rltk::DistanceAlg::Pythagoras.distance2d(Point::new(pos.x, pos.y), *player_pos);
@@ -33,8 +36,12 @@ impl<'a> System<'a> for MonsterAI {
         );
 
         if path.success && path.steps.len() > 1 {
+          let mut idx = map.xy_idx(pos.x, pos.y);
+          map.blocked[idx] = false;
           pos.x = path.steps[1] as i32 % map.width;
           pos.y = path.steps[1] as i32 / map.width;
+          idx = map.xy_idx(pos.x, pos.y);
+          map.blocked[idx] = true;
           viewshed.dirty = true;
         }
       }
