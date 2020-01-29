@@ -136,7 +136,7 @@ fn main() {
       .with(Player{})
       .with(Name { name: "Player".to_string() })
       .with(Viewshed { visible_tiles: Vec::new(), range: 8, dirty: true })
-      .with( CombatStats { max_hp: 30, hp: 30, defense: 2, power: 2 })
+      .with( CombatStats { max_hp: 30, hp: 30, defense: 2, power: 4 })
       .build();
 
     for (i, room) in map.rooms.iter().skip(1).enumerate() {
