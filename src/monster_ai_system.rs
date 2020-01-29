@@ -1,6 +1,6 @@
 extern crate specs;
 use specs::prelude::*;
-use super::{ Viewshed, Position, Map, Monster, Name, WantsToMelee, RunState };
+use super::{ Viewshed, Position, Map, Monster, WantsToMelee, RunState };
 
 extern crate rltk;
 use rltk::{ Point  };

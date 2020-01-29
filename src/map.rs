@@ -1,5 +1,5 @@
 use rltk::{RGB, Rltk, Console, RandomNumberGenerator, BaseMap, Algorithm2D, Point};
-use super::{ Rect };
+use super::{ Rect, MAPCOUNT, MAPWIDTH, MAPHEIGHT };
 use std::cmp::{ max, min };
 use specs::prelude::*;
 
@@ -74,14 +74,14 @@ impl Map {
   /// This gives a handful of random rooms and corridors joining them together.
   pub fn new_map_rooms_and_corridors() -> Map {
     let mut map = Map{
-      tiles : vec![TileType::Wall; 80*50],
+      tiles : vec![TileType::Wall; MAPCOUNT],
       rooms : Vec::new(),
-      width : 80,
-      height: 50,
-      revealed_tiles: vec![false; 80*50],
-      visible_tiles: vec![false; 80*50],
-      blocked: vec![false; 80*50],
-      tile_content: vec![Vec::new(); 80*50],
+      width : MAPWIDTH as i32,
+      height: MAPHEIGHT as i32,
+      revealed_tiles: vec![false; MAPCOUNT],
+      visible_tiles: vec![false; MAPCOUNT],
+      blocked: vec![false; MAPCOUNT],
+      tile_content: vec![Vec::new(); MAPCOUNT],
     };
 
     const MAX_ROOMS : i32 = 30;

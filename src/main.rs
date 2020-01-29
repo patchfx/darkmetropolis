@@ -33,6 +33,10 @@ pub use melee_combat_system::MeleeCombatSystem;
 mod damage_system;
 pub use damage_system::DamageSystem;
 
+const MAPWIDTH: usize = 80;
+const MAPHEIGHT: usize = 50;
+const MAPCOUNT: usize = MAPHEIGHT * MAPWIDTH;
+
 #[derive(PartialEq, Copy, Clone)]
 pub enum RunState { AwaitingInput, PreRun, PlayerTurn, MonsterTurn }
 
@@ -104,7 +108,7 @@ impl GameState for State {
 }
 
 fn main() {
-    let mut context = Rltk::init_simple8x8(80, 50, "Dark Metropolis", "resources");
+    let mut context = Rltk::init_simple8x8(MAPWIDTH, MAPHEIGHT, "Dark Metropolis", "resources");
     context.with_post_scanlines(true);
 
     let mut gs = State { ecs: World::new() };
