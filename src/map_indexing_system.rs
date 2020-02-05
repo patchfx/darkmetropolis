@@ -14,6 +14,7 @@ impl<'a> System<'a> for MapIndexingSystem {
     let (mut map, position, blockers, entities) = data;
 
     map.populate_blocked();
+    map.clear_content_index();
 
     for (entity, position) in (&entities, &position).join() {
       let idx = map.xy_idx(position.x, position.y);

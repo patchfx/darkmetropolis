@@ -175,10 +175,11 @@ fn main() {
           .build();
     }
 
-    gs.ecs.insert(GameLog { entries: vec!["Welcome to Dark Metropolis".to_string()] });
     gs.ecs.insert(map);
     gs.ecs.insert(Point::new(player_x, player_y));
     gs.ecs.insert(player_entity);
     gs.ecs.insert(RunState::PreRun);
+    gs.ecs.insert(GameLog { entries: vec!["Welcome to Dark Metropolis".to_string()] });
+
     rltk::main_loop(context, gs);
 }
