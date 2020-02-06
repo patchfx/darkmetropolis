@@ -114,7 +114,9 @@ impl GameState for State {
 }
 
 fn main() {
-    let mut context = Rltk::init_simple8x8(MAPWIDTH, MAPHEIGHT, "Dark Metropolis", "resources");
+    let mut context = rltk::RltkBuilder::simple80x50()
+      .with_title("Dark Metropolis")
+      .build();
     context.with_post_scanlines(true);
 
     let mut gs = State { ecs: World::new() };
@@ -175,6 +177,7 @@ fn main() {
           .build();
     }
 
+    gs.ecs.insert(rltk::RandomNumberGenerator::new());
     gs.ecs.insert(map);
     gs.ecs.insert(Point::new(player_x, player_y));
     gs.ecs.insert(player_entity);

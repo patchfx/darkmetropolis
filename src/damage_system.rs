@@ -1,7 +1,6 @@
 extern crate specs;
 use specs::prelude::*;
 use super::{CombatStats, SufferDamage, Player, GameLog, Name };
-use rltk::console;
 
 pub struct DamageSystem {}
 
